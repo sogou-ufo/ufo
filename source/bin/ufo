@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var libpath, libufo;
+try {
+    // this is the normal location
+    libufo = require('ufo');
+}
+catch (e) {
+    libpath = require('path'),
+
+    libufo = require(libpath.join(__dirname, '..', 'lib'));
+}
+libufo.include('management/cli');
