@@ -1,1 +1,6 @@
-alert(1)
+require.config({
+    baseUrl: '/static/js'
+});
+
+
+

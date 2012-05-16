@@ -26,7 +26,6 @@ exports.run = function(params , options){
     
     port = params[0] || appconf.port || port;
     
-    console.log(server)
     var app = new server.APP(port);
     
     
