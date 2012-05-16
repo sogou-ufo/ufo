@@ -1,0 +1,12 @@
+body{
+    font:12px/1.231 arial,sans-serif;
+}
+
+pre,
+code,
+kbd,
+samp,
+tt {
+    font-family:monospace;
+     line-height:100%;
+}
