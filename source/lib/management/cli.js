@@ -61,7 +61,7 @@ function main(){
     var args = process.argv.slice(2);
     var commandName = args.length == 0  ? 'help' : args.shift();
     var command , argInfo;
-    
+
     try{
         command = require('./commands/' + commandName);
     }catch(e){

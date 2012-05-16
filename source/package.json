@@ -8,7 +8,8 @@
     ],
     "dependencies": {
         "express": "2.5.9",
-        "request": ""
+        "request": "2.9.202",
+        "colors":"0.6.0"
     },
     "keywords": [
         "framework",
@@ -16,7 +17,7 @@
     ],
     "main": "lib/index",
     "bin": {
-        "mojito": "bin/ufo"
+        "ufo": "bin/ufo"
     },
     "engines": {
         "node": ">= 0.4.0 < 0.7.0",
@@ -25,7 +26,11 @@
     "devDependencies": {},
     "homepage": "",
     "repository": {
-        "url": ""
+        "type": "git",
+        "url": "git://github.com/sogou-ufo/ufo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/sogou-ufo/ufo/issues"
     },
     "scripts": {
         "start": "ufo start",
