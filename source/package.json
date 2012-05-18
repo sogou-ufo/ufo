@@ -1,6 +1,6 @@
 {
     "name": "ufo",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "UFO is a develope environment for front-end developer",
     "author": "UFO Team of Sogou-inc.",
     "contributors": [
@@ -9,7 +9,8 @@
     "dependencies": {
         "express": "2.5.9",
         "request": "2.9.202",
-        "colors":"0.6.0"
+        "colors":"0.6.0",
+        "requirejs":"1.0.8"
     },
     "keywords": [
         "framework",

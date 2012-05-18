@@ -1,1 +1,9 @@
-{}
+{
+    "domain":"ufo",
+    "apache_url":"http://ufo.sogou-inc.com/~{username}/",
+    "apache_path_reg":"public_html\\/(.*)",
+    "port":8150,
+    "rewrite":{
+        "/aaaaaa":"http://www.sogou.com"
+    }
+}

@@ -3,6 +3,7 @@
 require('colors');
 var fs = require('fs');
 var util = require('util');
+var appconf = require('./conf').config;
 
 var log = function(message){
     console.log(message.cyan);
@@ -35,12 +36,31 @@ var success = function(message) {
 };
 
 var getApacheLocation = function(filepath){
-    var url = 'http://ufo.sogou-inc.com/~{username}/{path}';
+    var url = appconf.apache_url ;
+
+    var username = '' , path = '' , file='';
+    if( filepath.indexOf('/search') == 0 ){//assume on the ufo server
+        username = /\/search\/(\w*)\//.exec(filepath)[1];
+    }
     
-    var username = /\/search\/(\w*)\//.exec(filepath)[1];
-    var path = /public_html\/(.*)/.exec(filepath)[1];
+    var path_reg = new RegExp(appconf.apache_path_reg);
+
+    try{
+        path = path_reg.exec(filepath)[1];
+    }catch(e){
+        error('Error apache path reg.');
+    }
+
+    if( path[path.length-1] != '/' ){
+        var path_arr = path.split('/');
+        file = path_arr.pop();
+        path = path_arr.join('/') + '/';
+    }
     
-    return url.replace('{username}' , username).replace('{path}' , path);
+    return {
+        path: url.replace('{username}' , username) + path,
+        file: file
+    };
 };
 
 var createFolder = function(pwd){

@@ -3,6 +3,10 @@ var utils = require('../utils');
 var requirejs = require('requirejs');
 var exec = require('child_process').exec;
 
+
+var yuicompressor = __dirname + '/../../3rd/yuicompressor.jar';
+
+
 var confJs = {
     baseUrl: process.cwd() + '/static/js',
     name:"main",
@@ -28,6 +32,8 @@ exports.options = [
 
 
 exports.run = function(params , options){
+    options = options || {};
+
     utils.removeFolder('build');
     utils.createFolder('build');
     
@@ -43,7 +49,7 @@ exports.run = function(params , options){
     
     
     if( options.compile ){
-        exec( 'java -jar /etc/tools/yuicompressor.jar --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
+        exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
             if( !error ){
                 utils.success('Compress javascript file success.');
             }else{
@@ -51,7 +57,7 @@ exports.run = function(params , options){
             }
         });
 
-        exec( 'java -jar /etc/tools/yuicompressor.jar --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
+        exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
             if( !error ){
                 utils.success('Compress css file success.');
             }else{
