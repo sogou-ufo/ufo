@@ -22,10 +22,28 @@ APP.prototype = {
         
         app.get(/\/(\w*\.html)$/ , function(req,res){ //html file
             var param = req.params;
-            var file = process.cwd() + '/html/' + param;
+            var html_dir = process.cwd() + '/html/';
             
-            res.header('Content-type' , 'text/html');
-            res.send( fs.readFileSync(file) );
+            
+            try{
+                res.header('Content-type' , 'text/html');
+                var body = fs.readFileSync( html_dir + param );
+                
+                var header = fs.readFileSync( html_dir + 'header.html' );
+                var footer = fs.readFileSync( html_dir + 'footer.html' );
+
+                res.send( header + body + footer );
+                
+            }catch(e){
+                try{
+                    res.header('Content-type' , 'text/html');
+                    var body = fs.readFileSync( process.cwd() + '/' + param );
+                    
+                    res.send( body);
+                }catch(e){
+                    res.send(404);
+                }
+            }
         });
 
 
@@ -42,9 +60,10 @@ APP.prototype = {
         
         if( appconf.rewrite ){
             for( var reg in appconf.rewrite ){
-                app.get( /(\w*)$/ , function(reg){
+                app.get( new RegExp(reg) , function(reg){
                     return function( req , res){
                         var url = appconf.rewrite[reg];
+                        utils.log('Rewrite ' + reg + ' to ' + url );
                         request.get(url).pipe(res);
                     };
                 }(reg) );

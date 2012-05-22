@@ -1,6 +1,5 @@
 require.config({
-    baseUrl: '/static/js'
+    baseUrl: 'static/js'
 });
-
 
 
