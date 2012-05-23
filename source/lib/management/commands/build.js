@@ -65,7 +65,7 @@ exports.run = function(params , options){
     utils.removeFolder('build');
     utils.createFolder('build');
     
-    utils.processFolder(process.cwd() + '/build' , process.cwd() , ['static', 'build','app.json']);
+    utils.processFolder(process.cwd() + '/build' , process.cwd() , ['build','app.json']);
     
     requirejs.optimize(confJs , function(res){
         utils.success('requirejs build js success.');

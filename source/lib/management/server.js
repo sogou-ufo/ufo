@@ -53,7 +53,7 @@ APP.prototype = {
             
             var url = utils.getApacheLocation(file) ;
 
-            var path = url.path + url.file.replace('.o' , '.php');
+            var path = url.path + 'phpd/' + url.file.replace('.o' , '.php');
             
             request.get(path).pipe(res);
         });
