@@ -3,7 +3,6 @@ var utils = require('../utils');
 var requirejs = require('requirejs');
 var exec = require('child_process').exec;
 
-
 var yuicompressor = __dirname + '/../../3rd/yuicompressor.jar';
 
 var UFO_JS =  '/static/js/ufo.js';
@@ -11,7 +10,8 @@ var UFO_JS =  '/static/js/ufo.js';
 var confJs = {
     baseUrl: process.cwd() + '/static/js',
     name:"main",
-    out:"build/static/js/main.js"
+    out:"build/static/js/main.js",
+    optimize:"none"
 };
 
 var confCss = {
@@ -71,9 +71,11 @@ exports.run = function(params , options){
         utils.success('requirejs build js success.');
     });
 
-    requirejs.optimize(confCss , function(res){
-        utils.success('requirejs build css success.');
-    });
+
+    exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out);
+//    requirejs.optimize(confCss , function(res){//sth. bug goes here
+    utils.success('requirejs build css success.');
+//    });
 
     fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
     

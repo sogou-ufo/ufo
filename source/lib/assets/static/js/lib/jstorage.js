@@ -67,7 +67,7 @@
  *
  **/
 
-define (["lib/jquery.json"],function(){
+define (function(){
 return (function($){
     if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
         throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
