@@ -1,7 +1,7 @@
 
 
 var utils = require('./utils');
-
+var fs = require('fs');
 
 function makeOptionMap(optionInfo) {
     var optionMap = {};
@@ -61,6 +61,16 @@ function main(){
     var args = process.argv.slice(2);
     var commandName = args.length == 0  ? 'help' : args.shift();
     var command , argInfo;
+    
+    var noNeedAppJsonCommand = ['help' , 'create'];
+    if( noNeedAppJsonCommand.indexOf( commandName ) == -1 ){
+        try{
+            fs.statSync( process.cwd() + '/app.json' ).isFile();
+        }catch(e){
+            utils.error("Can't find app.json, make sure you are in the app directory.Exit!" , '' , true);
+        }
+    }
+    
 
     try{
         command = require('./commands/' + commandName);

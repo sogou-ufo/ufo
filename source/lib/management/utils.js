@@ -3,7 +3,6 @@
 require('colors');
 var fs = require('fs');
 var util = require('util');
-var appconf = require('./conf').config;
 
 var log = function(message){
     console.log(message.cyan);
@@ -36,6 +35,7 @@ var success = function(message) {
 };
 
 var getApacheLocation = function(filepath){
+    var appconf = require('./conf').config;
     var url = appconf.apache_url ;
 
     var username = '' , path = '' , file='';

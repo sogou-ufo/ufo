@@ -18,17 +18,6 @@ exports.run = function(params , options){
     
     var app = new server.APP(port);
     
-    
-    app.start(function(err){
-        if (err) {
-            utils.error('There was an error starting the application:\n');
-            utils.error(err);
-            console.log('\n');
-            utils.error('UFO was not started!\n', null, true);
-            return;
-        }
-        utils.success('\tUFO started' +
-            ' on http://'+ (appconf.domain || 'ufo') +':' + port );
-    });
+    app.start();
 };
 

@@ -13,9 +13,20 @@ var APP = function(port){
 
 APP.prototype = {
     start: function(callback){
-        var app;
+        var app , port = this.port;
         this.app = app = express.createServer();
         
+        app.on('error',function(error){
+            if( error.errno == 'EADDRINUSE' ){
+                utils.error('Server start failed. Try use other port.' , 'ufo start 8888' , true);
+            }
+        });
+        
+        app.on('listening',function(error){
+            utils.success('\tUFO started' +
+                          ' on http://'+ (appconf.domain || 'ufo') +':' + port );
+        });
+
         app.configure(function(){
             app.use(express.static(process.cwd() + '/'));
         });
@@ -57,6 +68,24 @@ APP.prototype = {
             
             request.get(path).pipe(res);
         });
+
+        app.get(/^\/$/ , function(req,res){ //php file
+            var html_dir = process.cwd() + '/html/';
+            
+            var htmls = fs.readdirSync(html_dir);
+            var html = '',
+            tpl = '<p><a href="{file}">{file}</a></p>';
+            htmls.forEach(function(item){
+                if( ['header.html' , 'footer.html'].indexOf(item) != -1 ) return;
+                html += tpl.replace(/{file}/g , item);
+            });
+
+            res.header('Content-type' , 'text/html');
+            res.send( html );
+
+        });
+        
+
         
         if( appconf.rewrite ){
             for( var reg in appconf.rewrite ){
@@ -69,7 +98,6 @@ APP.prototype = {
                 }(reg) );
             }
         }
-        
         
         app.listen(this.port);
         
