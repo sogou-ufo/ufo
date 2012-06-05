@@ -11,7 +11,7 @@ var updates = {
     },
     lib: function(){
         
-        exec('mkdir temp;cd temp;wget https://nodeload.github.com/sogou-ufo/ufo/zipball/master;unzip master;cd sogou*;mkdir ../../static/js/lib/;mv source/lib/assets/static/js/lib/* ../../static/js/lib/;cd ../../;rm -rf temp;' , function(error , stdout , stderr){
+        exec('mkdir temp;cd temp;wget https://nodeload.github.com/sogou-ufo/ufo/zipball/master;unzip master;cd sogou*;mkdir ../../static/js/lib/;mv source/lib/assets/static/js/lib/* ../../static/js/lib/;mv source/lib/assets/static/js/ufo.js ../../static/js/;cd ../../;rm -rf temp;' , function(error , stdout , stderr){
             if( !error ){
                 utils.success('Update lib success');
             }else{

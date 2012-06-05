@@ -67,6 +67,7 @@ exports.run = function(params , options){
     
     utils.processFolder(process.cwd() + '/build' , process.cwd() , ['build','app.json']);
     
+    //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
     requirejs.optimize(confJs , function(res){
         utils.success('requirejs build js success.');
     });

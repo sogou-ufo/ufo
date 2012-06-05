@@ -10,7 +10,7 @@
         "express": "2.5.9",
         "request": "2.9.202",
         "colors":"0.6.0",
-        "requirejs":"1.0.8"
+        "requirejs":"2.0.1"
     },
     "keywords": [
         "framework",
