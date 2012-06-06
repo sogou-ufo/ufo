@@ -18,6 +18,15 @@ var updates = {
                 utils.error(error);
             }
         });
+    },
+    php:function(){
+        exec('svn co http://svn.sogou-inc.com/svn/userplatform/daohang/trunk/ting temp;cd temp;cp phpd/*.php ../phpd/; cp tpl/*.php ../tpl/;cd ..;rm -rf temp;' , function(error , stdout , stderr){
+            if( !error )  {
+                utils.success('Update php files success');
+            }else{
+                utils.error(error);
+            }
+        });
     }
 };
 

@@ -58,13 +58,13 @@ APP.prototype = {
         });
 
 
-        app.get(/\/(\w*\.o)$/ , function(req,res){ //php file
+        app.get(/\/(\w*\.php)$/ , function(req,res){ //php file
             var param = req.params;
             var file = process.cwd() + '/' + param;
             
             var url = utils.getApacheLocation(file) ;
 
-            var path = url.path + 'phpd/' + url.file.replace('.o' , '.php');
+            var path = url.path + 'phpd/' + url.file;
             
             request.get(path).pipe(res);
         });

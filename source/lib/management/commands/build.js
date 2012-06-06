@@ -27,6 +27,11 @@ exports.options = [
         'shortName' : 'c',
         'longName' : 'compile',
         'hasValue' : false
+    },
+    {
+        "shortName": "p",
+        "longName": "publish",
+        "hasValue": false
     }
 ];
 
@@ -99,6 +104,21 @@ exports.run = function(params , options){
                 utils.error('Error! '+ error);
             }
         });
+    }
+    
+    
+    if( options.publish ){
+        utils.log('try to publish now.');
+        try{
+            utils.processFolder( process.cwd() + '/../static' , process.cwd() + '/build/static'  );
+            utils.processFolder( process.cwd() + '/../phpd' ,process.cwd() + '/phpd' );
+            utils.processFolder(process.cwd() + '/../phpd' , process.cwd() + '/phpd' );
+        }catch(e){
+            if( e.message.indexOf('ENOENT') != -1 ){
+                utils.error('Not in project folder.' ,null , true);
+            }
+        }
+        utils.success('Publish success.');
     }
 };
 

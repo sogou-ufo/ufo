@@ -107,7 +107,7 @@ var removeFolder = function(path){
     }
 };
 
-var processFile = function(target , source){
+var processFile = function(target , source){console.log(target)
     util.pump(
         fs.createReadStream(source),
         fs.createWriteStream(target),
@@ -127,7 +127,7 @@ var processFolder = function(target_folder , assets_dir , exclude){
         for( var i=0,l=exclude.length; i<l; i++ ){
             if( exclude[i] == file ) return;
         }
-
+        
         var path = fs.statSync(assets_dir + '/' + file);
         
         var target = target_folder + '/' + file;
