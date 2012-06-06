@@ -111,8 +111,9 @@ exports.run = function(params , options){
         utils.log('try to publish now.');
         try{
             utils.processFolder( process.cwd() + '/../static' , process.cwd() + '/build/static'  );
-            utils.processFolder( process.cwd() + '/../phpd' ,process.cwd() + '/phpd' );
-            utils.processFolder(process.cwd() + '/../phpd' , process.cwd() + '/phpd' );
+            utils.processFolder(process.cwd() + '/../tpl' , process.cwd() + '/tpl' );
+            utils.processFolder(process.cwd() + '/../ofrag' , process.cwd() + '/ofrag' );
+            utils.processFolder(process.cwd() + '/../dfrag' , process.cwd() + '/dfrag' );
         }catch(e){
             if( e.message.indexOf('ENOENT') != -1 ){
                 utils.error('Not in project folder.' ,null , true);

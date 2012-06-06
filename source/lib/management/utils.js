@@ -107,7 +107,7 @@ var removeFolder = function(path){
     }
 };
 
-var processFile = function(target , source){console.log(target)
+var processFile = function(target , source){
     util.pump(
         fs.createReadStream(source),
         fs.createWriteStream(target),
