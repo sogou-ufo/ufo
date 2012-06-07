@@ -76,6 +76,7 @@ function main(){
         command = require('./commands/' + commandName);
     }catch(e){
         utils.error('Invalid command: '+ commandName);
+        console.log(e);
         return;
     };
     

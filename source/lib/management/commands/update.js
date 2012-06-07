@@ -20,8 +20,16 @@ var updates = {
         });
     },
     php:function(){
-        exec('svn co http://svn.sogou-inc.com/svn/userplatform/daohang/trunk/ting temp' , function(error , stdout , stderr){
+        exec('cd ..;svn up;cd fe;rm -rf phpd;rm -rf tpl;rm -rf ofrag;rm -rf dfrag;' , function(error , stdout , stderr){
             if( !error )  {
+
+                exec('ln -s  ../phpd/');
+                exec('ln -s  ../tpl/');
+                exec('ln -s  ../ofrag/');
+                exec('ln -s  ../dfrag/');
+                exec("svn propset svn:ignore -F .svnignore .");
+                utils.success('Update php files success.');
+                /*
                 var curcwd = process.cwd() + '/';
                 utils.processFolder( curcwd + 'phpd' , curcwd + 'temp/phpd' );
                 utils.processFolder( curcwd + 'tpl' , curcwd + 'temp/tpl' );
@@ -29,6 +37,7 @@ var updates = {
                 utils.processFolder( curcwd + 'dfrag' , curcwd + 'temp/dfrag' );
                 utils.removeFolder( curcwd + 'temp' );
                 utils.success('Update php files success');
+                 */
             }else{
                 utils.error(error);
             }

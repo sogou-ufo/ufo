@@ -3,6 +3,7 @@ var utils = require('./utils');
 var express = require('express');
 var request = require('request');
 var fs = require('fs');
+var querystring = require('querystring');
 
 var appconf = require('./conf').config;
 
@@ -56,17 +57,30 @@ APP.prototype = {
                 }
             }
         });
+        
+        if( appconf.rewrite ){
+            for( var reg in appconf.rewrite ){
+                app.get( reg , function(reg){
+                    return function( req , res){
+                        var url = appconf.rewrite[reg];
+                        url += '?' + querystring.stringify(req.query);
+                        utils.log('Rewrite ' + reg + ' to ' + url );
+                        request.get(url).pipe(res);
+                    };
+                }(reg) );
+            }
+        }
+        
 
-
-        app.get(/\/(\w*\.php)$/ , function(req,res){ //php file
+        app.get(/\/(\w*\.php)$/ , function(req,res , next){ //php file
             var param = req.params;
             var file = process.cwd() + '/' + param;
-            
-            var url = utils.getApacheLocation(file) ;
 
+            var url = utils.getApacheLocation(file) ;
+                
             var path = url.path + 'phpd/' + url.file;
-            
             request.get(path).pipe(res);
+
         });
 
         app.get(/^\/$/ , function(req,res){ //php file
@@ -85,19 +99,6 @@ APP.prototype = {
 
         });
         
-
-        
-        if( appconf.rewrite ){
-            for( var reg in appconf.rewrite ){
-                app.get( new RegExp(reg) , function(reg){
-                    return function( req , res){
-                        var url = appconf.rewrite[reg];
-                        utils.log('Rewrite ' + reg + ' to ' + url );
-                        request.get(url).pipe(res);
-                    };
-                }(reg) );
-            }
-        }
         
         app.listen(this.port);
         
