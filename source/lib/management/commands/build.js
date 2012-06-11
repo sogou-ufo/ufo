@@ -63,60 +63,73 @@ var compileHtml = function(){
     utils.success( 'Compile html files '+ result.join(',') + ' success' );
 };
 
+var publish = function(){
+    utils.log('try to publish now.');
+    try{
+        utils.processFolder( process.cwd() + '/../static' , process.cwd() + '/build/static'  );
+    }catch(e){
+        if( e.message.indexOf('ENOENT') != -1 ){
+            utils.error('Not in project folder.' ,null , true);
+        }
+    }
+    utils.success('Publish success.');
+
+};
+
 
 exports.run = function(params , options){
     options = options || {};
 
     utils.removeFolder('build');
     utils.createFolder('build');
+
+    exec("svn propset svn:ignore  build .");
+
     
     utils.processFolder(process.cwd() + '/build' , process.cwd() , ['build','app.json']);
     
     //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
     requirejs.optimize(confJs , function(res){
         utils.success('requirejs build js success.');
+
+        exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
+            utils.success('requirejs build css success.');
+
+            fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
+            
+            compileHtml();
+            
+            
+            if( options.compile ){
+                exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
+                    if( !error ){
+                        utils.success('Compress javascript file success.');
+                    }else{
+                        utils.error('Error! '+ error);
+                    }
+                    exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
+                        if( !error ){
+                            utils.success('Compress css file success.');
+                        }else{
+                            utils.error('Error! '+ error);
+                        }
+                        options.publish && publish();
+                    });
+                });
+
+            }else{
+                options.publish && publish();
+            }
+            
+        });
+        
+
+
     });
 
 
-    exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out);
 //    requirejs.optimize(confCss , function(res){//sth. bug goes here
-    utils.success('requirejs build css success.');
 //    });
 
-    fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
-    
-    compileHtml();
-    
-    
-    if( options.compile ){
-        exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
-            if( !error ){
-                utils.success('Compress javascript file success.');
-            }else{
-                utils.error('Error! '+ error);
-            }
-        });
-
-        exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
-            if( !error ){
-                utils.success('Compress css file success.');
-            }else{
-                utils.error('Error! '+ error);
-            }
-        });
-    }
-    
-    
-    if( options.publish ){
-        utils.log('try to publish now.');
-        try{
-            utils.processFolder( process.cwd() + '/../static' , process.cwd() + '/build/static'  );
-        }catch(e){
-            if( e.message.indexOf('ENOENT') != -1 ){
-                utils.error('Not in project folder.' ,null , true);
-            }
-        }
-        utils.success('Publish success.');
-    }
 };
 
