@@ -63,7 +63,7 @@ var compileHtml = function(){
     utils.success( 'Compile html files '+ result.join(',') + ' success' );
 };
 
-var publish = function(){
+var publish = function(cb){
     utils.log('try to publish now.');
     try{
         utils.processFolder( process.cwd() + '/../static' , process.cwd() + '/build/static'  );
@@ -73,11 +73,12 @@ var publish = function(){
         }
     }
     utils.success('Publish success.');
+    cb && cb();
 
 };
 
 
-exports.run = function(params , options){
+exports.run = function(params , options , cb){
     options = options || {};
 
     utils.removeFolder('build');
@@ -113,12 +114,12 @@ exports.run = function(params , options){
                         }else{
                             utils.error('Error! '+ error);
                         }
-                        options.publish && publish();
+                        options.publish && publish(cb);
                     });
                 });
 
             }else{
-                options.publish && publish();
+                options.publish && publish(cb);
             }
             
         });
