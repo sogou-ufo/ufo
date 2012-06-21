@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="UFO : javascript, nodejs" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>UFO</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/sogou-ufo/ufo">View on GitHub</a>
+
+          <h1 id="project_title">UFO</h1>
+          <h2 id="project_tagline">javascript, nodejs</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/sogou-ufo/ufo/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/sogou-ufo/ufo/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>UFO 是一个集成Web项目开发环境，帮助Web前端开发人员快速开发应用。</p>
+
+<p>UFO搭建于nodejs之上，根据需要可以配置相应的php访问环境等等。UFO集成了前端开发必备的开发框架，并增加了前端编译、本地调试等功能，使得前端开发人员可以不依赖于后端工程师独立开发应用。</p>
+
+<p>UFO的开发借鉴了Yahoo的开源项目<a href="https://github.com/yahoo/mojito#readme">mojito</a>。</p>
+
+<h2>安装</h2>
+
+<p><code>npm install -g ufo</code> </p>
+
+<p>(通常需要root权限，ufo内部机器可以跳过这一步，已经全局安装)</p>
+
+<h2>快速开始</h2>
+
+<pre><code>ufo create test
+cd test
+</code></pre>
+
+<p>可以根据需要更改app.json中的配置，如修改为</p>
+
+<div class="highlight">
+<pre><span class="p">{</span>
+    <span class="s2">"domain"</span><span class="o">:</span><span class="s2">"localhost"</span><span class="p">,</span>
+    <span class="s2">"apache_url"</span><span class="o">:</span><span class="s2">"http://localhost/"</span><span class="p">,</span>
+    <span class="s2">"apache_path_reg"</span><span class="o">:</span><span class="s2">"workspace\\/(.*)"</span><span class="p">,</span>
+    <span class="s2">"port"</span><span class="o">:</span><span class="mi">8820</span>
+<span class="p">}</span>
+</pre>
+</div>
+
+
+<p>输入
+<code>ufo start</code></p>
+
+<p>浏览器输入
+<code>http://localhost:8820</code></p>
+
+<p>(ufo机器请依提示输入)</p>
+
+<p>即可启动调试服务器，可以获取更多的功能。</p>
+
+<h2>app.json</h2>
+
+<p>根目录下项目配置文件，说明如下</p>
+
+<ul>
+<li>domain</li>
+</ul><p>该项目运行的domain(ufo机器不需要改动)</p>
+
+<ul>
+<li>apache_url</li>
+</ul><p>因为nodejs不能serve php，所以需要使用其他服务器运行php，键入根目录地址即可(ufo机器不需要改动)</p>
+
+<ul>
+<li>apache_path_reg</li>
+</ul><p>正则表达式，apache根目录在机器上的实际目录地址(ufo机器不需要改动)</p>
+
+<ul>
+<li>port</li>
+</ul><p>服务器端口</p>
+
+<ul>
+<li>rewrite</li>
+</ul><p>对象，键为需要匹配的url正则，值为rewrite的地址</p>
+
+<ul>
+<li>encoding</li>
+</ul><p>支持utf-8和gbk，当为gbk时，将对需要的文件做必要的转码工作。</p>
+
+<h2>方法列表</h2>
+
+<p>以下{}为用户可改变的变量，[]为用户可选变量</p>
+
+<h3>ufo create {project}</h3>
+
+<p>创建以project为根目录的文件夹。目录中为如下结构</p>
+
+<pre><code>--app.json   项目综合配置文件
+--html       存放html的文件夹
+  --footer.html        html模板底部
+  --header.html        html模板头部
+--static     存放所有静态文件
+  --js                 存放js
+    --ufo.js                 jquery+underscore+requirejs
+    --main.js                主文件，依据requirejs编写，最后main.js中的依赖会合并为main.js
+    --libs                   通用库，用requirejs module形式存放
+  --css                存放css   
+    --main.css               主文件，最后其中通过@import引入的文件将合并为main.css
+    --reset.css              通用重置css
+    --font.css               通用字体css
+    --grid.css               通用布局css
+    --page.css               页面css
+--phhd        存放php页面文件
+</code></pre>
+
+<h3>ufo start [port]</h3>
+
+<p>在项目根目录下运行，将开启调试服务器。port可以指定服务器开启的端口，也可以在app.json中设置。默认为8150。调试服务器有如下特性</p>
+
+<ul>
+<li>html模板</li>
+</ul><p>html目录下的文件都为强制作为模板形式。其中header.html为模板头部，footer.html为底部，访问其他html文件会自动加上header和footer。</p>
+
+<ul>
+<li>php文件</li>
+</ul><p>所有以.php结尾的文件将视为访问php文件，通过apache将自动获取phpd下的php文件。</p>
+
+<ul>
+<li>rewrite</li>
+</ul><p>当调试需要时可以指定本地url返回某线上url的内容。</p>
+
+<h3>ufo update [svn/lib/php]</h3>
+
+<p>默认svn。</p>
+
+<p>svn将执行svn update工作。</p>
+
+<p>lib将github上的库文件更新到本地，项目经常更新一下能获得更多的js库。</p>
+
+<p>php需要在项目svn中执行，此时将建立对应上层目录前端代码的文件夹软连接，保证本地调试的便利性。</p>
+
+<h3>ufo build [-c] [-p]</h3>
+
+<p>在项目根目录下运行，将对全项目进行编译，编译到build目录下。</p>
+
+<p>依据逻辑合并js和css文件。逻辑如下</p>
+
+<ul>
+<li><p>js 
+js文件遵循requirejs逻辑</p></li>
+<li><p>css
+css文件也通过requirejs合并。main.css内通过@import引入的均会合成一个。</p></li>
+</ul><p>同时编译会将html目录下的源文件分别于header.html,footer.html合并，并放置到build目录下，可以直接通过apache进行效果查看。</p>
+
+<p>如果假如-c参数，将进行压缩，使用yuicompressor。</p>
+
+<p>如果假如-p参数，将进行文件的部署，默认需要在项目svn目录里，程序会自动将编译出来的静态文件转移到上层目录的static中。</p>
+
+<h3>ufo publish</h3>
+
+<p>将执行 ufo build -c -p，同时进行svn ci 操作，必须在项目根目录下进行。</p>
+
+<h2>其他帮助</h2>
+
+<ul>
+<li><p>requirejs 
+<a href="http://requirejs.org/">http://requirejs.org/</a></p></li>
+<li><p>npm package
+<a href="http://search.npmjs.org/#/ufo">http://search.npmjs.org/#/ufo</a></p></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">UFO maintained by <a href="https://github.com/sogou-ufo">sogou-ufo</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
