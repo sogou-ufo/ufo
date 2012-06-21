@@ -3,6 +3,11 @@
 require('colors');
 var fs = require('fs');
 var util = require('util');
+var Iconv = require('iconv').Iconv;
+var utf2gbk  = new Iconv('UTF-8' , 'GBK');
+var gbk2utf  = new Iconv('GBK' , 'UTF-8');
+
+
 
 var log = function(message){
     console.log(message.cyan);
@@ -139,6 +144,19 @@ var processFolder = function(target_folder , assets_dir , exclude){
             processFile(target , assets_dir + '/' + file);
         }
     });
+};
+
+
+exports.encode = function(file){
+    var conf = require('./conf').config;
+    if( conf.encoding == 'gbk' ) file = utf2gbk.convert(file);
+    return file;
+};
+
+exports.decode = function(file){
+    var conf = require('./conf').config;
+    if( conf.encoding == 'gbk' ) file = gbk2utf.convert(file);
+    return file.toString();
 };
 
 exports.log = log;

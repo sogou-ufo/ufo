@@ -2,6 +2,8 @@ var fs = require('fs');
 var utils = require('../utils');
 var requirejs = require('requirejs');
 var exec = require('child_process').exec;
+var crypto = require('crypto');
+
 
 var yuicompressor = __dirname + '/../../3rd/yuicompressor.jar';
 
@@ -63,6 +65,59 @@ var compileHtml = function(){
     utils.success( 'Compile html files '+ result.join(',') + ' success' );
 };
 
+var getTimestamp = function(file){
+    var md5 = crypto.createHash('md5');
+    md5.update(fs.readFileSync(file ));
+    var result = md5.digest('hex');
+    result = [result.slice(0,16) , result.slice(16)];
+    var f = '';
+    result.forEach(function(item){
+        var num = (parseInt( item , 16 ) % 997).toString();
+        while( num.length < 3 ){
+            num = '0' + num;
+        }
+        f += num;
+    });
+    return f;
+};
+
+var compileTimestamp = function(){
+    var cssMain = process.cwd() + '/build/static/css/main.css';
+    var cssToken = /url\(['"]?(.*?)['"]?\)/g , cr;
+    var cssFile = fs.readFileSync( cssMain ).toString();
+    while( ( cr=cssToken.exec(cssFile) ) != null ){
+        var img = cr[1];
+        if( img.indexOf('http') == 0 ) continue;//online image will not compile
+        img = process.cwd() + '/build/static/css/' + img;
+        var tm = getTimestamp(img);
+        cssFile = cssFile.replace( cr[1] , cr[1] +'?t='+tm );
+    }
+    fs.writeFileSync( cssMain , cssFile );
+    
+    
+
+    var tplFolder = process.cwd() + '/tpl/';
+    
+    try{
+        var tpls = fs.readdirSync(tplFolder);
+
+        var token = /(?:href|src)=['"](.*)\?t=(\d+|@date@)['"]/g , result;
+        tpls.forEach(function(tpl){
+            var file = fs.readFileSync(tplFolder + tpl);
+            file = utils.decode(file);
+            while( (result = token.exec(file)) != null ){
+                var target_file = process.cwd() + '/build/' + result[1];
+                var tm = getTimestamp(target_file);
+                
+                file = file.replace( '?t=' + result[2] , '?t=' + tm );
+            }
+            
+            fs.writeFileSync( tplFolder + tpl , utils.encode(file) );
+        });
+        utils.success('Add timestamp success.');
+    }catch(e){console.log(e)};
+};
+
 var publish = function(cb){
     utils.log('try to publish now.');
     try{
@@ -73,6 +128,8 @@ var publish = function(cb){
         }
     }
     utils.success('Publish success.');
+    
+    
     cb && cb();
 
 };
@@ -114,11 +171,13 @@ exports.run = function(params , options , cb){
                         }else{
                             utils.error('Error! '+ error);
                         }
+                        compileTimestamp();
                         options.publish && publish(cb);
                     });
                 });
 
             }else{
+                compileTimestamp();
                 options.publish && publish(cb);
             }
             
