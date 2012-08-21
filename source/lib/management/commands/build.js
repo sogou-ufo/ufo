@@ -34,6 +34,11 @@ exports.options = [
         "shortName": "p",
         "longName": "publish",
         "hasValue": false
+    },
+    {
+        "shortName":"s",
+        "longName":"single",
+        "hasValue":false
     }
 ];
 
@@ -153,7 +158,7 @@ exports.run = function(params , options , cb){
         exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
             utils.success('requirejs build css success.');
 
-            fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
+            //fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
             
             compileHtml();
             
