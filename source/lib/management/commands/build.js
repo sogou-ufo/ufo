@@ -120,7 +120,7 @@ var compileTimestamp = function(){
             fs.writeFileSync( tplFolder + tpl , utils.encode(file) );
         });
         utils.success('Add timestamp success.');
-    }catch(e){console.log(e)};
+    }catch(e){utils.log('No tpl folder. Try "ufo update php"')};
 };
 
 var publish = function(cb){
@@ -146,50 +146,51 @@ exports.run = function(params , options , cb){
     utils.removeFolder('build');
     utils.createFolder('build');
 
-    exec("svn propset svn:ignore  build .");
 
     
     utils.processFolder(process.cwd() + '/build' , process.cwd() , ['build','app.json']);
     
-    //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
-    requirejs.optimize(confJs , function(res){
-        utils.success('requirejs build js success.');
+    exec("for i in `find build/ -name '*.css' -o -name '*.js' -o -name '*.html'`;do dos2unix $i;done" , function(){
+    
+        //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
+        requirejs.optimize(confJs , function(res){
+            utils.success('requirejs build js success.');
 
-        exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
-            utils.success('requirejs build css success.');
+            exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
+                utils.success('requirejs build css success.');
 
-            //fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
-            
-            compileHtml();
-            
-            
-            if( options.compile ){
-                exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
-                    if( !error ){
-                        utils.success('Compress javascript file success.');
-                    }else{
-                        utils.error('Error! '+ error);
-                    }
-                    exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
+                //fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
+                
+                compileHtml();
+                
+                
+                if( options.compile ){
+                    exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
                         if( !error ){
-                            utils.success('Compress css file success.');
+                            utils.success('Compress javascript file success.');
                         }else{
                             utils.error('Error! '+ error);
                         }
-                        compileTimestamp();
-                        options.publish && publish(cb);
+                        exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
+                            if( !error ){
+                                utils.success('Compress css file success.');
+                            }else{
+                                utils.error('Error! '+ error);
+                            }
+                            compileTimestamp();
+                            options.publish && publish(cb);
+                        });
                     });
-                });
 
-            }else{
-                compileTimestamp();
-                options.publish && publish(cb);
-            }
+                }else{
+                    compileTimestamp();
+                    options.publish && publish(cb);
+                }
+                
+            });
             
+
         });
-        
-
-
     });
 
 
