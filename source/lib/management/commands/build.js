@@ -87,40 +87,44 @@ var getTimestamp = function(file){
 };
 
 var compileTimestamp = function(){
-    var cssMain = process.cwd() + '/build/static/css/main.css';
-    var cssToken = /url\(['"]?(.*?)['"]?\)/g , cr;
-    var cssFile = fs.readFileSync( cssMain ).toString();
-    while( ( cr=cssToken.exec(cssFile) ) != null ){
-        var img = cr[1];
-        if( img.indexOf('http') == 0 ) continue;//online image will not compile
-        img = process.cwd() + '/build/static/css/' + img;
-        var tm = getTimestamp(img);
-        cssFile = cssFile.replace( cr[1] , cr[1] +'?t='+tm );
-    }
-    fs.writeFileSync( cssMain , cssFile );
-    
+    exec("for i in `find build/ -name '*.css' -o -name '*.js' -o -name '*.html'`;do dos2unix $i;done" , function(){
     
 
-    var tplFolder = process.cwd() + '/tpl/';
-    
-    try{
-        var tpls = fs.readdirSync(tplFolder);
+        var cssMain = process.cwd() + '/build/static/css/main.css';
+        var cssToken = /url\(['"]?(.*?)['"]?\)/g , cr;
+        var cssFile = fs.readFileSync( cssMain ).toString();
+        while( ( cr=cssToken.exec(cssFile) ) != null ){
+            var img = cr[1];
+            if( img.indexOf('http') == 0 ) continue;//online image will not compile
+            img = process.cwd() + '/build/static/css/' + img;
+            var tm = getTimestamp(img);
+            cssFile = cssFile.replace( cr[1] , cr[1] +'?t='+tm );
+        }
+        fs.writeFileSync( cssMain , cssFile );
+        
+        
 
-        var token = /(?:href|src)=['"](.*)\?t=(\d+|@date@)['"]/g , result;
-        tpls.forEach(function(tpl){
-            var file = fs.readFileSync(tplFolder + tpl);
-            file = utils.decode(file);
-            while( (result = token.exec(file)) != null ){
-                var target_file = process.cwd() + '/build/' + result[1];
-                var tm = getTimestamp(target_file);
+        var tplFolder = process.cwd() + '/tpl/';
+        
+        try{
+            var tpls = fs.readdirSync(tplFolder);
+
+            var token = /(?:href|src)=['"](.*)\?t=(\d+|@date@)['"]/g , result;
+            tpls.forEach(function(tpl){
+                var file = fs.readFileSync(tplFolder + tpl);
+                file = utils.decode(file);
+                while( (result = token.exec(file)) != null ){
+                    var target_file = process.cwd() + '/build/' + result[1];
+                    var tm = getTimestamp(target_file);
+                    
+                    file = file.replace( '?t=' + result[2] , '?t=' + tm );
+                }
                 
-                file = file.replace( '?t=' + result[2] , '?t=' + tm );
-            }
-            
-            fs.writeFileSync( tplFolder + tpl , utils.encode(file) );
-        });
-        utils.success('Add timestamp success.');
-    }catch(e){utils.log('No tpl folder. Try "ufo update php"')};
+                fs.writeFileSync( tplFolder + tpl , utils.encode(file) );
+            });
+            utils.success('Add timestamp success.');
+        }catch(e){utils.log('No tpl folder. Try "ufo update php"')};
+    });
 };
 
 var publish = function(cb){
@@ -150,47 +154,46 @@ exports.run = function(params , options , cb){
     
     utils.processFolder(process.cwd() + '/build' , process.cwd() , ['build','app.json']);
     
-    exec("for i in `find build/ -name '*.css' -o -name '*.js' -o -name '*.html'`;do dos2unix $i;done" , function(){
     
-        //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
-        requirejs.optimize(confJs , function(res){
-            utils.success('requirejs build js success.');
+    //exec('r.js -o name='+ confJs.baseUrl + '/' + confJs.name + ' out=' + confJs.out);
+    requirejs.optimize(confJs , function(res){
+        utils.success('requirejs build js success.');
 
-            exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
-                utils.success('requirejs build css success.');
+        exec('r.js -o cssIn='+ confCss.cssIn + ' out=' + confCss.out , function(){
+            utils.success('requirejs build css success.');
 
-                //fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
-                
-                compileHtml();
-                
-                
-                if( options.compile ){
-                    exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
+            //fs.writeFileSync( process.cwd() + '/build' + UFO_JS , fs.readFileSync(process.cwd() + UFO_JS) );
+            
+            compileHtml();
+            
+            
+            if( options.compile ){
+                exec( 'java -jar '+ yuicompressor +' --type js --charset utf-8 ' + confJs.out + ' -o ' + confJs.out  , function(error){
+                    if( !error ){
+                        utils.success('Compress javascript file success.');
+                    }else{
+                        utils.error('Error! '+ error);
+                    }
+                    exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
                         if( !error ){
-                            utils.success('Compress javascript file success.');
+                            utils.success('Compress css file success.');
                         }else{
                             utils.error('Error! '+ error);
                         }
-                        exec( 'java -jar '+ yuicompressor +' --type css --charset utf-8 ' + confCss.out + ' -o ' + confCss.out  , function(error){
-                            if( !error ){
-                                utils.success('Compress css file success.');
-                            }else{
-                                utils.error('Error! '+ error);
-                            }
-                            compileTimestamp();
-                            options.publish && publish(cb);
-                        });
+                        compileTimestamp();
+                        options.publish && publish(cb);
                     });
+                });
 
-                }else{
-                    compileTimestamp();
-                    options.publish && publish(cb);
-                }
-                
-            });
+            }else{
+                compileTimestamp();
+                options.publish && publish(cb);
+            }
+            
+        });
             
 
-        });
+        
     });
 
 
